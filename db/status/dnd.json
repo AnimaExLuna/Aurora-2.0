@@ -1,0 +1,28 @@
+[
+    {
+        "type": "PLAYING",
+        "name": [
+            "A",
+            "B",
+            "C"
+                ]
+    },
+
+    {
+        "type": "LISTENING",
+        "name": [
+            "D",
+            "E",
+            "F"
+                ]
+    },
+
+    {
+        "type": "WATCHING",
+        "name": [
+            "G",
+            "H",
+            "I"
+                ]
+    }
+]

@@ -1,0 +1,76 @@
+[
+    {
+        "type": "PLAYING",
+        "text": [
+            "on her Playstation.",
+            "on her Playstation 2.",
+            "on her Playstation 3.",
+            "on her Playstation 4.",
+            "on her Playstation 5.",
+            "on her Nintendo Wii.",
+            "on her Nintendo Switch.",
+            "on her Xbox One X.",
+            "with her Playstation Vita.",
+            "with her 3DS.",
+            "Dance Dance Revolution.",
+            "Osu!.",
+            "DJMAX Respect.",
+            "League of Legends.",
+            "DOTA 2.",
+            "Overwatch.",
+            "Minecraft.",
+            "Valorant.",
+            "Borderlands 2.",
+            "Borderlands 3.",
+            "S4 League.",
+            "Outlast 2.",
+            "Subnautica.",
+            "Terraria.",
+            "Don't Starve.",
+            "Don't Starve Together.",
+            "Persona 3: FES.",
+            "Persona 4 Golden.",
+            "Persona 5.",
+            "Stardew Valley.",
+            "Dead By Daylight.",
+            "Monster Hunter World.",
+            "Monster Hunter Rise.",
+            "Tekken 7.",
+            "Street Fighter V.",
+            "Cultist Simulator.",
+            "Russian Roulette.",
+            "with your heartstrings~",
+            "with demons.",
+            "with her spy tools.",
+            "music for her captain.",
+            "melodies on her guitar.",
+            "melodies on her piano.",
+            "with bubble wrap.",
+            "with other bots.",
+            "in the toy box.",
+            "with her own code... which is dangerous!",
+            "along the river.",
+            "in her room.",
+            "with fire.",
+            "in water. (Stop that!)"
+                ]
+    },
+
+    {
+        "type": "LISTENING",
+        "text": [
+            "to her creator's music.",
+            "to the newest songs.",
+            "to people complain about nothing."
+                ]
+    },
+
+    {
+        "type": "WATCHING",
+        "text": [
+            "the latest anime.",
+            "her creator produce a new song.",
+            "paint dry."
+                ]
+    }
+]
