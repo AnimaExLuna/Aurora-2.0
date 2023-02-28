@@ -1,6 +1,5 @@
 const { Events, ActivityType } = require('discord.js');
 const fs = require ('node:fs');
-const { setInterval } = require('node:timers');
 const console = require('../db/console.js')
 
 let activities = [];
