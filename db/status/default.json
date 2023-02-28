@@ -1,6 +1,6 @@
 [
     {
-        "type": "PLAYING",
+        "type": "0",
         "text": [
             "on her Playstation.",
             "on her Playstation 2.",
@@ -57,7 +57,7 @@
     },
 
     {
-        "type": "LISTENING",
+        "type": "2",
         "text": [
             "to her creator's music.",
             "to the newest songs.",
@@ -66,7 +66,7 @@
     },
 
     {
-        "type": "WATCHING",
+        "type": "3",
         "text": [
             "the latest anime.",
             "her creator produce a new song.",
