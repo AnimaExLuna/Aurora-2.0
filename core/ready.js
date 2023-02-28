@@ -1,5 +1,6 @@
-const { Events, Presence, ActivityType } = require('discord.js');
+const { Events, ActivityType } = require('discord.js');
 const fs = require ('node:fs');
+const { setInterval } = require('node:timers');
 const console = require('../db/console.js')
 
 let activities = [];
@@ -18,7 +19,7 @@ module.exports = {
             console.logError(`Error loading default status file: ${error}`);
         }
 
-        // Set initial presence
+        //Startup presence
         try {
             const activity = activities[Math.floor(Math.random() * activities.length)];
             console.logInfo(`Selected activity: ${JSON.stringify(activity)}`);
@@ -39,22 +40,23 @@ module.exports = {
             console.logError(`Error setting presence: ${error}`);
           }
 
-        // Set interval to change presence
-        setInterval(() => {
+        //Interval Presence 
+        setInterval(async() => {
             const activity = activities[Math.floor(Math.random() * activities.length)];
             const activityType = ActivityType[activity.type];
             const activityText = activity.text[Math.floor(Math.random() * activity.text.length)];
 
-            client.user.setPresence({
-                activity: {
-                    name: activityText,
-                    type: activityType
-                }
-            }).then(() => {
+            try {
+                await client.user.setPresence({
+                    activity: {
+                        name: activityText,
+                        type: activityType
+                    }
+                });
                 console.logInfo(`Activity set to: ${activityType} ${activityText}`);
-            }).catch((error) => {
+            } catch (error) {
                 console.logError(`Error setting activity: ${error}`);
-            });
+            }
         }, 300000);
     }
 };
