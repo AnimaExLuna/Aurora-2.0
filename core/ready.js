@@ -1,34 +1,28 @@
-const { Events } = require('discord.js');
+const { Events, Presence, ActivityType } = require('discord.js');
 const activities = require('../db/status/default.json');
 
 module.exports = {
     name: Events.ClientReady,
     once: true,
     execute(client) {
-        console.log(`Aurora 2.0 is now online. . . Info: ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
-        console.log(`Program started at: ${new Date().toLocaleString()}`);
-        client.user.setPresence({
-            activities: [{
-                name: 'the latest anime.',
-                type: 'WATCHING'
-            }],
-            status: 'online'
-        });
-        
-
-        /* console.log(activities);
+        console.log(`Aurora > ${client.user.tag} is now online.`);
+        console.log(`Aurora > Program started at: ${new Date()}`);
+        console.log(`Aurora > ----------------------------------`);
+        console.log(`Aurora > Initializing Default Status File...`);
+        console.log(`Aurora > Activities: ${JSON.stringify(activities)}`);
 
         setInterval(() => {
-            console.log('Intializing Default Status File...')
-            try {
-                const activity = activities[Math.floor(Math.random() * activities.length)];
-                console.log(`Activity set to: ${activity.type} ${activity.text[Math.floor(Math.random() * activity.text.length)]}`);
-                client.user.setPresence(activity.text[Math.floor(Math.random() * activity.text.length)], { type: activity.type });
-                console.log(`Status set as: ${JSON.stringify(activity)}`)
-            } catch (error) {
-                console.error('Error setting status:', error);
-            }
-        }, 300000); // Change status every 30 minutes. */
+            const activity = activities[Math.floor(Math.random() * activities.length)];
+            const activityType = ActivityType[activity.type];
+            const activityText = activity.text[Math.floor(Math.random() * activity.text.length)];
 
-    },
+            client.user.setPresence({
+            activity: {
+                name: activityText,
+                type: activityType
+            }
+        });
+        console.log(`Aurora > Activity set to: ${activityType} ${activityText}`);
+        }, 120000);
+    }
 };
