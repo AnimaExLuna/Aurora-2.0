@@ -1,28 +1,46 @@
 [
     {
-        "type": "PLAYING",
+        "type": "0",
         "text": [
-            "A",
-            "B",
-            "C"
+            "on her Playstation.",
+            "on her Playstation 2.",
+            "on her Playstation 3."
                 ]
     },
 
     {
-        "type": "LISTENING",
+        "type": "2",
         "text": [
-            "D",
-            "E",
-            "F"
+            "to her creator's music.",
+            "to the newest songs.",
+            "to people complain about nothing."
                 ]
     },
 
     {
-        "type": "WATCHING",
+        "type": "3",
         "text": [
-            "G",
-            "H",
-            "I"
+            "the latest anime.",
+            "her creator produce a new song.",
+            "paint dry."
+                ]
+    },
+
+    {
+        "type": "4",
+        "text": [
+            "the latest anime.",
+            "her creator produce a new song.",
+            "paint dry."
+                ]
+    },
+
+    {
+        "type": "5",
+        "text": [
+            "the latest anime.",
+            "her creator produce a new song.",
+            "paint dry."
                 ]
     }
 ]
