@@ -1,48 +1,111 @@
 const { Events, ActivityType } = require('discord.js');
-const fs = require('node:fs');
+const setStatus = require('./status.js');
 const console = require('../db/console.js');
+const config = require('../db/config.json');
 
-const jsonData = fs.readFileSync('./db/status/default.json', 'utf-8');
-const statuses = JSON.parse(jsonData);
+const setBotStatus = async (client) => {
+  // Define a function to handle setting the bot's status based on the presence update
+  const handlePresenceUpdate = (oldPresence, newPresence) => {
+    // If the user whose presence updated is the owner
+    if (newPresence.user.id === config.ownerID) {
+      //console.logInfo(`Captain's new status: ${newPresence.status}`);
+      // If the status has changed
+      if (newPresence.status !== previousStatus) {
+        // Set the bot's status based on the new status
+        switch (newPresence.status) {
+          case 'online':
+            console.logInfo(`The Captain is online!`);
+            setStatus(client, 'online');
+            break;
+          case 'dnd':
+            console.logInfo(`The Captain is busy at the moment.`);
+            setStatus(client, 'dnd');
+            break;
+          case 'idle':
+            console.logInfo(`The Captain seems to be away for a while.`);
+            setStatus(client, 'idle');
+            break;
+          default:
+            console.logInfo(`The Captain is offline. Setting default status...`);
+            setStatus(client, 'offline');
+            break;
+        }
+      }
+      // Update the previous status variable
+      previousStatus = newPresence.status;
+    }
+  };
 
-const setStatus = (client) => {
-    try {
-        const values = statuses[Math.floor(Math.random() * statuses.length)];
+  // Initialize the previous status variable to offline
+  let previousStatus = 'offline';
+
+  // Register the presenceUpdate event listener
+  client.on('presenceUpdate', handlePresenceUpdate);
+
+  try {
+    // Fetch the captain user
+    const captain = await client.users.fetch(config.ownerID);
+
+    // Get the captain's status from their presence, defaulting to offline
+    const captainStatus = captain?.presence?.status || 'offline';
+
+
+    // If the captain is online
+    if (captainStatus === 'online') {
+      try {
+        console.logInfo('The Captain is online! Now activating tracking mode:');
+        // Fetch the tracked status data
+        const trackerStatus = await trackedStatus();
+        console.logInfo(`Captain's tracker status: ${trackerStatus}`);
+
+        // Set the bot's status based on the tracked status data
+        const values = trackerStatus.online[Math.floor(Math.random() * trackerStatus.online.length)];
         const activityType = parseInt(values.type);
         const activityTypeString = ActivityType[activityType];
         const activityText = values.text[Math.floor(Math.random() * values.text.length)];
         client.user.setPresence({
-            activities: [{
-                name: activityText,
-                type: activityType
-            }],
-            status: 'online'
+          activities: [{
+            name: activityText,
+            type: activityType
+          }],
+          status: 'online'
         });
         console.logInfo(`Activity set to: ${activityTypeString} ${activityText}`);
-        console.logInfo(`Current presence: ${JSON.stringify(client.user.presence)}`);
-    } catch (error) {
-        console.logError(`Error setting presence: ${error}`);
+      } catch (error) {
+        console.logError(`Error fetching captain's tracker status: ${error}`);
+        // Set the bot's status to the default status
+        setStatus(client, 'offline');
+      }
+    } else {
+      console.logInfo(`The Captain is offline. Setting default status...`);
+      // Set the bot's status to the default status
+      setStatus(client, 'offline');
     }
+  } catch (error) {
+    console.logError(error);
+    console.logError(`Error fetching captain's tracker status: ${error}`);
+    // Set the bot's status to the default status
+    setStatus(client, 'offline');
+  }
 };
 
 module.exports = {
-    name: Events.ClientReady,
-    once: true,
-    async execute(client) {
-        try {
-            console.logStartup(client);
-            console.logInfo(`Initializing Default Status File...`);
-            console.logInfo(`Default status file loaded successfully.`);
-            console.logBreak();
+  name: Events.ClientReady,
+  once: true,
+  async execute(client) {
+    try {
+      console.logStartup(client);
 
-            setStatus(client);
+      setBotStatus(client);
 
-            setInterval(() => {
-                console.logInfo('Setting new random status...');
-                setStatus(client);
-            }, Math.floor(Math.random() * (60 * 60 * 1000 - 5 * 60 * 1000) + 5 * 60 * 1000));
-        } catch (error) {
-            console.logError(`Error loading default status file: ${error}`);
-        } console.logBreak();
+      setInterval(() => {
+        console.logInfo('Setting new random status...');
+        setBotStatus(client);
+      }, Math.floor(Math.random() * (60 * 60 * 1000 - 5 * 60 * 1000) + 5 * 60 * 1000));
+    } catch (error) {
+      console.logError(`Error loading default status file: ${error}`);
     }
+    console.logBreak();
+  },
 };
+
