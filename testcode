@@ -1,0 +1,11 @@
+ // Check if the message contains any of the keywords
+    /* const keywords = ['bestie'];
+    const emoji = '🤍';
+
+    if (keywords.some(word => message.content.toLowerCase().includes(word))) {
+      try {
+        await message.react(emoji);
+      } catch (error) {
+        console.log(`I could not react to this message: ${error}`);
+      }
+    } */

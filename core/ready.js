@@ -101,7 +101,7 @@ module.exports = {
       setInterval(() => {
         console.logInfo('Setting new random status...');
         setBotStatus(client);
-      }, Math.floor(Math.random() * (60 * 60 * 1000 - 5 * 60 * 1000) + 5 * 60 * 1000));
+      }, Math.floor(Math.random() * (60 * 60 * 1000 - 5 * 60 * 1000) + 20 * 60 * 1000));
     } catch (error) {
       console.logError(`Error loading default status file: ${error}`);
     }
