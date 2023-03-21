@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, Partials, Collection} = require('discord.js')
-const { token } = require('./db/config.json');
+const { devtoken } = require('./db/config.json');
 const fs = require('node:fs');
 
 const client = new Client({
@@ -25,7 +25,7 @@ for (const file of commandFiles) {
 	client.commands.set(command.data.name, command);
 }
 
-client.login(token);
+client.login(devtoken);
 require('./db/loader')(client);
 
 
