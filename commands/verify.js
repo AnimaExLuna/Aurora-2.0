@@ -48,19 +48,21 @@ module.exports = {
                 }
             }
 
-            if (interaction.isModalSubmit()) {
-                console.log('Modal Submitted');
+            collector.on('update', async (interaction) => {
                 if (interaction.customId === 'verify-modal') {
-                    console.log('verify-modal');
+                    if (interaction.isModalClosed()) {
+                        console.log('Modal Closed');
+                        return;
+                    }
                     const verificationInput = interaction.fields.getTextInputValue('verify-input');
                     console.log(`Verification input: ${verificationInput}`);
                     console.log(`Verification code: ${verificationCode}`);
                     if (verificationInput === verificationCode) {
                         const role = interaction.guild.roles.cache.find(role => role.name === 'Access');
                         await interaction.member.roles.add(role);
-            
+
                         button.components[0].setDisabled(true);
-            
+
                         button.components[0].setLabel('Verification Closed').setStyle(ButtonStyle.Secondary);
                         await interaction.editReply({ content: 'Verification successful. You now have access to the server.', components: [button] });
                         console.log('Verification successful');
@@ -69,7 +71,7 @@ module.exports = {
                         console.log('Invalid verification code');
                     }
                 }
-            }
+            });
             
             
         });

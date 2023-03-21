@@ -16,33 +16,30 @@ module.exports = {
       .setLabel("What's your favorite color?")
       .setStyle(TextInputStyle.Short);
 
-    const hobbiesInput = new TextInputBuilder()
-      .setCustomId('hobbiesInput')
-      .setLabel("What's some of your favorite hobbies?")
-      .setStyle(TextInputStyle.Paragraph);
-
     const firstActionRow = new ActionRowBuilder().addComponents(favoriteColorInput);
-    const secondActionRow = new ActionRowBuilder().addComponents(hobbiesInput);
 
-    modal.addComponents(firstActionRow, secondActionRow);
+    modal.addComponents(firstActionRow);
 
     await interaction.showModal(modal);
 
-    const filter = (interaction) => interaction.customId === 'testModal';
+    const filter = (interaction) => {
+      return interaction.isMessageComponent() &&
+        interaction.customId === 'testModal' &&
+        interaction.componentType === 'BUTTON' &&
+        interaction.customId === 'submit';
+    };    
 
     const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
 
-    collector.on('collect', (interaction) => {
-      console.log(interaction);
-      const colorInput = interaction.message.components[0].components.find(component => component.customId === 'favoriteColorInput');
-      const hobbiesInput = interaction.message.components[1].components.find(component => component.customId === 'hobbiesInput');
+    collector.on('collect', async (interaction) => {
+      console.log(`User ${interaction.user.id} submitted the following:`);
+      console.log(`Favorite color: ${interaction.values[0]}`);
 
-      console.log(`Color: ${colorInput.value}`);
-      console.log(`Hobbies: ${hobbiesInput.value}`);
+      await interaction.reply({ content: 'Your submission was received successfully!', ephemeral: true });
     });
 
-    collector.on('end', collected => {
-      console.log(`Collected ${collected.size} items`);
+    collector.on('end', (collected, reason) => {
+      console.log(`Collector ended: ${reason}`);
     });
   }
 };

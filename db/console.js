@@ -1,6 +1,4 @@
-
 const chalk = require('chalk');
-
 
 module.exports = {
   logStartup: function (client) {
@@ -13,16 +11,16 @@ module.exports = {
   },
 
   logInfo: function (message) {
-    console.log(`Aurora > ${chalk.blue('Info')}: ${message}`);
+    console.log(`Aurora > ${chalk.blue('Info')}: ${new Date().toLocaleString()} - ${message}`);
   },
 
   logError: function (message) {
-    console.error(`Aurora > ${chalk.red('Error')}: ${message}`);
+    console.error(`Aurora > ${chalk.red('Error')}: ${new Date().toLocaleString()} - ${message}`);
   },
 
   logWarning: function (message) {
-    console.warn(`Aurora > ${chalk.yellow('Warning')}: ${message}`);
+    console.warn(`Aurora > ${chalk.yellow('Warning')}: ${new Date().toLocaleString()} - ${message}`);
   },
 
   // Add more logging functions here as needed
-}
+};
