@@ -10,10 +10,13 @@
     "author": "Esirza",
     "license": "ISC",
     "dependencies": {
-        "chalk": "^4.1.2",
+        "chalk": "4.1.2",
         "discord.js": "^14.7.1",
-        "dotenv": "^16.0.0",
+        "dotenv": "^16.0.3",
         "enmap": "^5.8.8",
         "esm": "^3.2.25"
+    },
+    "devDependencies": {
+        "dependency-cruiser": "^12.11.0"
     }
 }

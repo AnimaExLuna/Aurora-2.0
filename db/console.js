@@ -1,7 +1,6 @@
 
 const chalk = require('chalk');
 
-
 module.exports = {
   logStartup: function (client) {
     console.log(`Aurora > ${client.user.tag} is now ${chalk.green('online')}.`);
@@ -24,5 +23,4 @@ module.exports = {
     console.warn(`Aurora > ${chalk.yellow('Warning')}: ${message}`);
   },
 
-  // Add more logging functions here as needed
 }

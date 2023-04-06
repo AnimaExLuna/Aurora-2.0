@@ -1,32 +1,50 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { token } = require('./db/config.json');
 const config = require('./db/config.json');
+const path = require('node:path');
 const fs = require('node:fs');
+require('dotenv').config();
+
+const token = process.env.TOKEN;
 
 const commands = [];
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
-const clientId = (config.clientID);
+const clientId = process.env.DEV;
 const guildId = (config.guildID);
 
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	commands.push(command.data.toJSON());
-}
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
 
+for (const folder of commandFolders) {
+
+	const commandsPath = path.join(foldersPath, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+	for (const file of commandFiles) {
+
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+		commands.push(command.data.toJSON());
+	}
+}
 const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
+
+	console.log('All commands are being cleared.')
+	rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
+		.then(() => console.log('Successfully deleted all guild commands.'))
+		.catch(console.error);
+
 	try {
-		console.log('Started refreshing application (/) commands.');
+		console.log(`Commands (${commands.length}) are now being reloaded/registered. Please wait.`);
 
 		await rest.put(
-			Routes.applicationCommands(clientId, guildId),
+			Routes.applicationGuildCommands(clientId, guildId),
 			{ body: commands },
+			console.log(commands)
 		);
 
-		console.log('Successfully reloaded application (/) commands.');
+		console.log(`Successfully reloaded/registered all commands.`);
 	} catch (error) {
 		console.error(error);
 	}
