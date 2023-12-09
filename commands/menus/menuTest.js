@@ -41,23 +41,23 @@ module.exports = {
             components: [row]
         });
 
-        const collector = menuCollector(interaction, 'selector', async (menu) => {
-            console.log(interaction);
-            if (menu.user.id === interaction.user.id) {
-                const selected = interaction.values ? interaction.values[0] : null;
-                if (selected === 'Cat') {
-                    await interaction.update('A feline lover!');
-                } else if (selected === 'Dog') {
-                    await interaction.update('One with the pack!');
-                } else if (selected === 'Bird') {
-                    await interaction.update('Someone likes to fly high!');
-                } else if (selected === 'Fish') {
-                    await interaction.update('The ocean is your fishbowl!');
-                }
-            } else {
-                menu.reply({ content: `These buttons aren't for you!`, ephemeral: true });
+        const filter = (interaction) => interaction.customId === 'selector' && interaction.user.id === interaction.message.interaction.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+
+        collector.on('collect', async (interaction) => {
+            const selected = interaction.values[0];
+
+            if (selected === 'Cat') {
+                await interaction.reply('A feline lover!');
+            } else if (selected === 'Dog') {
+                await interaction.reply('One with the pack!');
+            } else if (selected === 'Bird') {
+                await interaction.reply('Someone likes to fly high!');
+            } else if (selected === 'Fish') {
+                await interaction.reply('The ocean is your fishbowl!');
             }
-        });
+
+        })
 
     },
 };

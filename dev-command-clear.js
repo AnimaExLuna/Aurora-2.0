@@ -30,17 +30,9 @@ const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
 
-	try {
-		console.log(`Commands (${commands.length}) are now being reloaded/registered. Please wait.`);
+	console.log('All commands are being cleared.')
+	rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
+		.then(() => console.log('Successfully deleted all guild commands.'))
+		.catch(console.error);
 
-		await rest.put(
-			Routes.applicationGuildCommands(clientId, guildId),
-			{ body: commands },
-			console.log(commands)
-		);
-
-		console.log(`Successfully reloaded/registered all commands.`);
-	} catch (error) {
-		console.error(error);
-	}
 })();
