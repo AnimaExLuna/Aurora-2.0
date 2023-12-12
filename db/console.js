@@ -22,5 +22,4 @@ module.exports = {
     console.warn(`Aurora > ${chalk.yellow('Warning')}: ${new Date().toLocaleString()} - ${message}`);
   },
 
-  // Add more logging functions here as needed
-};
+}

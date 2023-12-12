@@ -106,3 +106,7 @@ dist
 # Extra Files
 ready
 testcode
+commands/reload.js
+.dependency-cruiser.js
+dev-command-init.js
+dev-command-init.js

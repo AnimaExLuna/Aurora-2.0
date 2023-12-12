@@ -1,0 +1,55 @@
+name: Discord.js CI/CD
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  sync-live:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' # Only run on manual trigger
+
+    steps:
+  - name: Merge dev into live
+    run: |
+      # Merge dev branch into live branch
+      git checkout live && git merge dev
+
+  - name: Push changes to live branch
+    uses: ad-m/github-push-action@master
+    with:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+      branch: live
+
+  - name: Deploy to live environment
+    uses: easingthemes/ssh-deploy@v2.2.5
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      ARGS: '-o StrictHostKeyChecking=no'
+    with:
+      args: ${{ env.ARGS }}
+      host: '129.153.154.245'
+      username: 'opc'
+      port: '22'
+      source: './'
+      target: '/home/opc/Documents/Aurora-2.0'
+      key: ${{ env.SSH_PRIVATE_KEY }}
+      known_hosts: ''
+      excludes: ''
+      rm_on_exit: 'yes'
+      script_post_deploy: 'cd /home/opc/Documents/Aurora-2.0 && git pull && npm install && pm2 restart bot'

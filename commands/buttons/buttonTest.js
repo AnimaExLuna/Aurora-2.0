@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('discord.js');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { addCollector } = require('../core/buttonCollector.js');
+const { buttonCollector } = require('../../core/buttonCollector.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -20,7 +20,7 @@ module.exports = {
       components: [row],
     });
 
-    const collector = addCollector(interaction, 'testButton', async (button) => {
+    const collector = buttonCollector(interaction, 'testButton', async (button) => {
       await button.reply('Yay, it worked!');
     });
 
