@@ -53,8 +53,8 @@ module.exports = {
                         .then(async interaction => {
                             try {
                                 const verifyEntry = interaction.fields.getTextInputValue('verifyModal');
-                                console.log(`Verify code: ${verifyCode}.`);
-                                console.log(`Verify entry: ${verifyEntry}.`);
+                                console.log(`User: ${interaction.user.username} - Verify code: ${verifyCode}.`);
+                                console.log(`User: ${interaction.user.username} - Verify entry: ${verifyEntry}.`);
                                 if (verifyEntry === verifyCode) {
                                     const role = interaction.guild.roles.cache.find(role => role.name === 'Verified');
                                     await interaction.member.roles.add(role);
