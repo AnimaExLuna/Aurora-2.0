@@ -1,6 +1,5 @@
 const console = require('../db/console.js');
 const config = require('../db/config.json');
-const censored = require('../db/censored.js');
 
 module.exports = (client, message) => {
 
