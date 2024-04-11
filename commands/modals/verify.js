@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const console = require('../../db/console.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -53,8 +54,10 @@ module.exports = {
                         .then(async interaction => {
                             try {
                                 const verifyEntry = interaction.fields.getTextInputValue('verifyModal');
-                                console.log(`User: ${interaction.user.username} - Verify code: ${verifyCode}.`);
-                                console.log(`User: ${interaction.user.username} - Verify entry: ${verifyEntry}.`);
+
+                                console.logInfo(`User: ${interaction.user.username} - Verify code: ${verifyCode}.`);
+                                console.logInfo(`User: ${interaction.user.username} - Verify entry: ${verifyEntry}.`);
+
                                 if (verifyEntry === verifyCode) {
                                     const role = interaction.guild.roles.cache.find(role => role.name === 'Verified');
                                     await interaction.member.roles.add(role);
@@ -73,10 +76,10 @@ module.exports = {
                                     }, 10000);
                                 }
                             } catch (error) {
-                                console.error(error);
+                                console.logError(error);
                             }
                         })
-                        .catch(err => console.log('The verification modal interaction was not collected.'));
+                        .catch(err => console.logWarning('The verification modal interaction was not collected.'));
                 }
             }
         })

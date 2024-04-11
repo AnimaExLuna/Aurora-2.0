@@ -1,0 +1,40 @@
+[
+  {
+    "title": "Beyond My Soul",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Midtempo"
+    ],
+    "bpm": 103,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\15-Beyond My Soul.mp3"
+  },
+  {
+    "title": "Shoot 'Em Down",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Midtempo"
+    ],
+    "bpm": 102,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\3-Shoot 'Em Down.mp3"
+  }
+]

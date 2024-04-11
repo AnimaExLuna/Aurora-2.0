@@ -1,12 +1,350 @@
-const selected = interaction.values[0];
+const { joinVoiceChannel, entersState, AudioPlayerStatus, createAudioResource, AudioPlayer } = require('@discordjs/voice');
+const fs = require('node:fs').promises;
+const path = require('node:path');
+const console = require('../db/console.js');
+const metadata = require('music-metadata');
 
-            if (selected === 'Cat') {
-                await interaction.update('A feline lover!');
-            } else if (selected === 'Dog') {
-                await interaction.update('One with the pack!');
-            } else if (selected === 'Bird') {
-                await interaction.update('Someone likes to fly high!');
-            } else if (selected === 'Fish') {
-                await interaction.update('The ocean is your fishbowl!');
+const musicFolder = 'X:/Tech/Coding/GitHub/Aurora-2.0/music';
+
+let connection = null;
+let songDatabase = [];
+const songQueue = [];
+
+async function refreshSongDatabase() {
+	const dbPath = path.join(__dirname, '../db/songs.json');
+	songDatabase = [];
+
+	try {
+		async function exploreSync(dirPath) {
+			const files = await fs.readdir(dirPath);
+			for (const file of files) {
+				const filePath = path.join(dirPath, file);
+				const stats = await fs.stat(filePath);
+
+				if (stats.isDirectory()) {
+					await exploreSync(filePath);
+				}
+				else if (stats.isFile()) {
+					const filenameWithoutExt = path.parse(file).name;
+					const formattedFilename = filenameWithoutExt.replace(
+						/\w\S*/g,
+						function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); },
+					);
+
+					let meta;
+					try {
+						meta = await metadata.parseFile(filePath);
+					}
+					catch (error) {
+						console.logError(`Error reading metadata for ${file}: ${error}`);
+					}
+
+					const title = meta?.common.title || formattedFilename;
+					const artist = meta?.common.artist || 'Unknown Artist';
+					const genre = meta?.common.genre || 'Unknown Genre';
+
+					const songEntry = { title, artist, genre, filename: file };
+					songEntry.filename = filePath;
+					songDatabase.push(songEntry);
+				}
+			}
+		}
+
+		await exploreSync(musicFolder);
+
+		const data = JSON.stringify(songDatabase, null, 2);
+		await fs.writeFile(dbPath, data, 'utf-8');
+		console.logInfo(`Song database refreshed and saved to: ${dbPath}`);
+		console.logInfo(`Database contains ${songDatabase.length} entries.`);
+	}
+	catch (error) {
+		console.logError('Error refreshing and saving song database:', error);
+	}
+}
+
+const refreshInterval = 60 * 60 * 1000;
+setInterval(refreshSongDatabase, refreshInterval);
+
+refreshSongDatabase();
+
+async function connect(channelId, guildId, adapterCreator) {
+	try {
+		songQueue.clear();
+
+		const queuePath = path.join(__dirname, '../db/queue.json');
+		await fs.promises.writeFile(queuePath, '[]', 'utf-8');
+
+		connection = await joinVoiceChannel({
+			channelId,
+			guildId,
+			adapterCreator,
+		});
+		console.logInfo(`Connected to voice channel: ${connection.channel.name}`);
+	}
+	catch (error) {
+		console.logError('Error connecting to voice channel:', error);
+	}
+}
+
+function disconnect() {
+	if (connection) {
+		connection.destroy();
+		connection = null;
+		songQueue.clear();
+		console.logInfo('Disconnected from voice channel');
+	}
+}
+
+function isConnected() {
+	return !!connection;
+}
+
+const getCurrentChannel = () => connection?.channel;
+
+const playAudio = async (interaction, connection, userTitle) => {
+	console.logInfo(`Database: ${songDatabase.map(song => song.title).join(', ')}`);
+
+	const matchingSongs = songDatabase.filter(song => song.title.toLowerCase() === userTitle.toLowerCase());
+
+	if (matchingSongs.length > 0) {
+		if (matchingSongs.length === 1) {
+			const matchedSong = matchingSongs[0];
+			console.logInfo(`Found matching song: ${matchedSong.title}`);
+			console.logInfo(`File name: ${matchedSong.filename}`);
+
+			const queueData = JSON.stringify(songQueue, null, 2);
+			const queuePath = path.join(__dirname, '../db/queue.JSON');
+			await fs.writeFile(queuePath, queueData, 'utf-8');
+			console.logInfo(`Queue data saved to: ${queuePath}`);
+
+			const songPathSegments = matchedSong.filename.split('/');
+			const songFilename = songPathSegments.pop();
+			const songDirectory = songPathSegments.join('/');
+
+			const filePath = path.join(musicFolder, songDirectory, songFilename);
+
+			try {
+				console.logInfo(`File path: ${filePath}`);
+				if (!connection) {
+					return interaction.reply('I\'m not connected to a voice channel yet. Please use the "join" command first!');
+				}
+			}
+			catch (error) {
+				console.logError(`Error during audio setup: ${error}`);
+			}
+
+			try {
+				console.logInfo('Initializing audio player. . .');
+				const player = new AudioPlayer();
+
+				console.logInfo(`Generating audio resource from: ${matchedSong.filename}. . .`);
+				const resource = createAudioResource(matchedSong.filename);
+
+				console.logInfo(`Current player: ${player}.
+                         Current resource: ${resource}.`);
+
+				connection.subscribe(player);
+				console.logInfo(`Now starting audio playback of ${matchedSong.filename}.`);
+				player.play(resource);
+
+				await entersState(player, AudioPlayerStatus.Playing, 1000);
+				console.logInfo(`Playback of ${matchedSong.title} has started!`);
+
+				player.on('idle', async () => {
+					console.logInfo('Playback finished. Attempting to play next song in queue...');
+					await playNextSong(connection);
+				});
+				player.on('error', (error) => console.logError(`Error during playback: ${error}`));
+
+				await interaction.reply(`Now playing: ${matchedSong.title} by ${matchedSong.artist}.`);
+
+			}
+			catch (error) {
+				console.logError(`Error playing audio: ${error}`);
+				return interaction.reply('Uh oh! There seems to be an issue. Please try again later.');
+			}
+
+		}
+		else {
+			return;
+			// Multiple matches, prompt user for selection
+			// ... implement logic to display options and handle user choice ...
+		}
+	}
+	else {
+		interaction.reply(`Sorry, couldn't find a song with the title "${userTitle}"`);
+	}
+};
+
+async function playNextSong(connection) {
+	if (songQueue.length > 0) {
+		const nextSong = songQueue.shift();
+		console.logInfo(`Next song: ${nextSong.title}.`);
+		await playAudio(connection, nextSong.title);
+	}
+	else {
+		console.logInfo('Queue is empty. Disconnecting from voice channel.');
+		disconnect();
+	}
+}
+
+async function addToQueue(interaction, songTitle) {
+	const queuePath = path.join(__dirname, '../db/queue.json');
+	console.logInfo(`Attempting to add song "${songTitle}" to queue.`);
+
+	const matchingSongs = songDatabase.filter(song => song.title.toLowerCase() === songTitle.toLowerCase());
+
+	if (matchingSongs.length > 0) {
+		const matchedSongObject = matchingSongs[0];
+
+		if (!songQueue.some(songObject => songObject.title.toLowerCase() === songTitle.toLowerCase())) {
+			songQueue.push(matchedSongObject);
+			console.logInfo(`Adding ${matchedSongObject.title} to the queue.`);
+			try {
+				await updateQueueFile(songQueue);
+				console.logInfo(`Updated queue data saved to: ${queuePath}`);
+			}
+			catch (error) {
+				console.logError(`Error saving queue data: ${error}.`);
+				interaction.reply('There was an issue updating the queue. Please try again later.');
+			}
+			interaction.reply(`Added "${matchedSongObject.title}" by ${matchedSongObject.artist} to the queue!`);
+		}
+		else {
+			interaction.reply(`"${songTitle}" is already in the queue!`);
+		}
+	}
+	else {
+		interaction.reply(`Sorry, couldn't find a song with the title "${songTitle}"`);
+	}
+}
+
+async function updateQueueFile(queueData, interaction) {
+	const queuePath = path.join(__dirname, '../db/queue.json');
+
+	try {
+		const queueDataJSON = JSON.stringify([...queueData], null, 2);
+		console.logInfo(`Updating queue data (before write): ${queueDataJSON}`);
+		fs.writeFile(queuePath, queueDataJSON, 'utf-8');
+	}
+	catch (error) {
+		console.logError(`Error saving queue data to ${queuePath}: ${error}`);
+		interaction.reply('There was an issue updating the queue. Please try again later.');
+	}
+}
+
+function stopAudio(connection) {
+	if (connection) {
+		connection.destroy();
+	}
+}
+
+module.exports = {
+	addToQueue,
+	connect,
+	connection: null,
+	disconnect,
+	getCurrentChannel,
+	isConnected,
+	playAudio,
+	refreshSongDatabase,
+	songDatabase,
+	stopAudio,
+};
+
+async function playAudio(interaction, connection, songOrTitle) {
+  if (typeof songOrTitle === 'string') {
+      // Search for a song using the title
+      const matchingSongs = songDatabase.filter(song => song.title.toLowerCase() === songOrTitle.toLowerCase());
+      // ... rest of the code for playing a song by title
+  } else if (typeof songOrTitle === 'object') {
+      // Use the provided song object directly
+      const song = songOrTitle;
+      // ... rest of the code for playing a song object
+  } else {
+      throw new Error(`Invalid song or title: ${songOrTitle}`);
+  }
+}
+
+async function addToQueue(interaction, songTitle) {
+    const queuePath = path.join(__dirname, '../db/queue.json');
+    console.logInfo(`Attempting to add song "${songTitle}" to queue.`);
+
+    const matchingSongs = songDatabase.filter(song => song.title.toLowerCase() === songTitle.toLowerCase());
+
+    if (matchingSongs.length > 0) {
+        const matchedSongObject = matchingSongs[0];
+
+        if (!songQueue.some(songObject => songObject.title.toLowerCase() === songTitle.toLowerCase())) {
+            songQueue.push(matchedSongObject);
+            console.logInfo(`Adding ${matchedSongObject.title} to the queue.`);
+            try {
+                await updateQueueFile(songQueue);
+                console.logInfo(`Updated queue data saved to: ${queuePath}`);
             }
-   
+            catch (error) {
+                console.logError(`Error saving queue data: ${error}.`);
+                interaction.reply('There was an issue updating the queue. Please try again later.');
+            }
+            interaction.reply(`Added "${matchedSongObject.title}" by ${matchedSongObject.artist} to the queue!`);
+        }
+        else {
+            interaction.reply(`"${songTitle}" is already in the queue!`);
+        }
+    }
+    else {
+        interaction.reply(`Sorry, couldn't find a song with the title "${songTitle}"`);
+    }
+}
+
+
+async function playAudio(interaction, connection, userTitle) {
+	const matchingSongs = songDatabase.filter(song => song.title.toLowerCase() === userTitle.toLowerCase());
+
+	if (matchingSongs.length === 0) {
+		return interaction.reply(`Sorry, couldn't find a song with the title "${userTitle}"`);
+	}
+
+	if (matchingSongs.length > 1) {
+	// Implement logic to display options and handle user choice (not shown here)
+		return;
+	}
+
+	const matchedSong = matchingSongs[0];
+
+	if (!connection) {
+		return interaction.reply('I\'m not connected to a voice channel yet. Please use the "join" command first!');
+	}
+
+	try {
+		console.logInfo(`Now starting audio playback of ${matchedSong.filename}`);
+
+		const songPathSegments = matchedSong.filename.split('/');
+		const songFilename = songPathSegments.pop();
+		const songDirectory = songPathSegments.join('/');
+
+		const filePath = path.join(musicFolder, songDirectory, songFilename);
+		const resource = createAudioResource(filePath);
+
+		const player = new AudioPlayer();
+		connection.subscribe(player);
+
+		player.play(resource);
+		await entersState(player, AudioPlayerStatus.Playing, 1000);
+
+		console.logInfo(`Playback of ${matchedSong.title} has started!`);
+
+		player.on('idle', async () => {
+			console.logInfo('Playback finished. Attempting to play next song in queue...');
+			await playNextSong(connection, userTitle);
+		});
+
+		player.on('error', (error) => console.logError(`Error during playback: ${error}`));
+
+		await interaction.reply(`Now playing: ${matchedSong.title} by ${matchedSong.artist}.`);
+	}
+	catch (error) {
+		console.logError(`Error playing audio: ${error}`);
+		return interaction.reply('Uh oh! There seems to be an issue. Please try again later.');
+	}
+}
