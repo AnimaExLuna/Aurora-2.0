@@ -1,11 +1,10 @@
-const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js')
+const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
 const path = require('node:path');
 const fs = require('node:fs');
 const console = require('./db/console.js');
-const config = require('./db/config.json');
 require('dotenv').config();
 
-const token = process.env.TOKEN;
+const token = process.env.DEVTOKEN;
 
 const client = new Client({
 	intents: [
@@ -13,10 +12,12 @@ const client = new Client({
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.GuildPresences,
 		GatewayIntentBits.GuildMessageReactions,
+		GatewayIntentBits.GuildVoiceStates,
 		GatewayIntentBits.DirectMessages,
-		GatewayIntentBits.MessageContent
+		GatewayIntentBits.DirectMessageReactions,
+		GatewayIntentBits.MessageContent,
 	],
-	partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember, Partials.Reaction]
+	partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember, Partials.Reaction],
 });
 
 client.commands = new Collection();
@@ -36,7 +37,8 @@ for (const folder of commandFolders) {
 
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
-		} else {
+		}
+		else {
 			console.logWarning(`The command at ${filePath} is missing "execute" or "data" properties required to run it.`);
 		}
 
@@ -45,5 +47,4 @@ for (const folder of commandFolders) {
 
 client.login(token);
 require('./db/loader')(client);
-
 

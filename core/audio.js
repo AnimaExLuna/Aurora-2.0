@@ -1,24 +1,36 @@
 const { joinVoiceChannel, entersState, AudioPlayerStatus, createAudioResource, AudioPlayer } = require('@discordjs/voice');
 const EventEmitter = require('events');
 const audioManager = new EventEmitter();
+const queueEmitter = new EventEmitter();
 const fs = require('node:fs').promises;
 const path = require('node:path');
 const metadata = require('music-metadata');
 const wait = require('node:timers/promises').setTimeout;
 
 const console = require('../db/console.js');
-const musicFolder = 'X:/Tech/Coding/GitHub/Aurora-2.0/music';
+const musicFolder = './music';
 
 let connection = null;
 let songCount = 0;
 let songDatabase = [];
 const songQueue = [];
+let totalCount = 0;
+
+loadTotalCount();
 
 class Song {
-	constructor(title, artist, genre, filename) {
+	constructor(title, artist, album, genre, bpm, website, picture, label, year, disk, lyrics, filename) {
 		this.title = title;
 		this.artist = artist;
+		this.album = album;
 		this.genre = genre;
+		this.bpm = bpm;
+		this.website = website;
+		this.picture = picture;
+		this.label = label;
+		this.year = year;
+		this.disk = disk;
+		this.lyrics = lyrics;
 		this.filename = filename;
 	}
 	getDisplayString() {
@@ -74,9 +86,17 @@ async function exploreSync(dirPath) {
 
 			const title = meta?.common.title || formattedFilename;
 			const artist = meta?.common.artist || 'Unknown Artist';
-			const genre = meta?.common.genre || 'Unknown Genre';
+			const album = meta?.common.album || 'Unknown Album';
+			const genre = meta?.common.genre || 'Not Listed';
+			const bpm = meta?.common.bpm || '???';
+			const website = meta?.common.website || '';
+			const picture = meta?.common.picture || '';
+			const label = meta?.common.label || 'Unknown Label';
+			const year = meta?.common.year || '????';
+			const disk = meta?.common.disk || '?';
+			const lyrics = meta?.common.lyrics || 'No Lyrics Provided';
 
-			const songEntry = new Song(title, artist, genre, filePath);
+			const songEntry = new Song(title, artist, album, genre, bpm, website, picture, label, year, disk, lyrics, filePath);
 			songEntry.filename = filePath;
 			songDatabase.push(songEntry);
 		}
@@ -108,6 +128,11 @@ async function connect(channelId, guildId, adapterCreator) {
 
 function disconnect() {
 	if (connection) {
+		const player = connection.subscription?.audioPlayer;
+		if (player) {
+			player.stop();
+			connection.unsubscribe();
+		}
 		connection.destroy();
 		connection = null;
 		songQueue.clear();
@@ -119,8 +144,64 @@ function isConnected() {
 	return !!connection;
 }
 
-function incrementSongCount() {
+async function incrementSongCount() {
 	songCount++;
+	console.logInfo(`Incremented song count to: ${songCount}`);
+
+	audioManager.emit('songCountUpdated', songCount);
+}
+
+async function incrementTotalCount() {
+	const filePath = path.join(__dirname, '../db/totalSongCount.JSON');
+
+	try {
+		await fs.access(filePath, fs.constants.F_OK);
+
+		const data = await fs.readFile(filePath, 'utf-8');
+		totalCount = JSON.parse(data).totalCount;
+	}
+	catch (error) {
+		if (error.code === 'ENOENT') {
+			console.logInfo('Total song count file not found. Creating a new one...');
+		}
+		else {
+			console.logError('Error reading total song count on update:', error);
+		}
+	}
+
+	totalCount++;
+
+	const data = JSON.stringify({ totalCount }, null, 2);
+	await fs.writeFile(filePath, data, 'utf-8');
+	console.logInfo('Total count updated!');
+}
+
+
+async function loadTotalCount() {
+	const filePath = path.join(__dirname, '../db/totalSongCount.JSON');
+
+	try {
+		await fs.promises.access(filePath, fs.constants.F_OK);
+
+		const data = await fs.promises.readFile(filePath, 'utf-8');
+		console.logInfo('Loaded data from totalSongCount.JSON:', data);
+		totalCount = JSON.parse(data).totalCount;
+	}
+	catch (error) {
+		if (error.code === 'ENOENT') {
+			console.logInfo('Total song count file not found. Initializing with count 0...');
+		}
+		else if (error.name === 'SyntaxError') {
+			console.logError('Error parsing total song count data:', error);
+			totalCount = 0;
+		}
+		else {
+			console.logError('Error reading total song count on load:', error);
+		// Handle other potential errors (optional)
+		}
+	}
+
+	return totalCount;
 }
 
 const getCurrentChannel = () => connection?.channel;
@@ -133,14 +214,15 @@ async function playNextSong(connection) {
 			const songTitle = nextSong.title;
 			console.logInfo(`Next song: ${songTitle}.`);
 			await playAudio(null, connection, songTitle);
-			await playNextSong(connection);
 		}
 		catch (error) {
 			console.logError(`Error playing next song: ${error}`);
+			return Promise.reject(error);
 		}
 	}
 	else {
 		console.logInfo('Queue is empty. Please add more songs.');
+		return Promise.resolve();
 	}
 }
 
@@ -157,7 +239,8 @@ async function playAudio(interaction = null, connection, songTitle) {
 	}
 
 	const matchedSong = matchingSongs[0];
-
+	incrementSongCount();
+	incrementTotalCount();
 
 	if (!connection) {
 		return interaction.reply('I\'m not connected to a voice channel yet. Please use the "/join" command first!');
@@ -168,6 +251,8 @@ async function playAudio(interaction = null, connection, songTitle) {
 			content: 'Let\'s play some tunes!',
 			ephemeral: true,
 		});
+		await wait(1_000);
+		await interaction.deleteReply();
 	}
 
 	try {
@@ -183,10 +268,9 @@ async function playAudio(interaction = null, connection, songTitle) {
 
 		player.on('playing', () => {
 			console.logInfo(`Playback of ${matchedSong.title} has started!`);
-			incrementSongCount();
 		});
 
-		audioManager.emit('newSong', matchedSong);
+		audioManager.emit('newSong', matchedSong, songCount, totalCount);
 		await entersState(player, AudioPlayerStatus.Playing, 1000);
 
 		player.on('idle', async () => {
@@ -198,6 +282,7 @@ async function playAudio(interaction = null, connection, songTitle) {
 				console.logInfo('The queue is empty. Please add more songs for playback.');
 			}
 		});
+
 
 		player.on('error', (error) => console.logError(`Error during playback: ${error}`));
 		return matchedSong;
@@ -222,22 +307,44 @@ async function addToQueue(interaction, songTitle) {
 		if (!songQueue.some(songObject => songObject.title.toLowerCase() === songTitle.toLowerCase())) {
 			songQueue.push(matchedSongObject);
 			console.logInfo(`Adding ${matchedSongObject.title} to the queue.`);
+
 			try {
 				await updateQueueFile(songQueue);
 				console.logInfo(`Updated queue data saved to: ${queuePath}`);
+				queueEmitter.emit('queueUpdated', songQueue.slice());
 			}
 			catch (error) {
 				console.logError(`Error saving queue data: ${error}.`);
-				interaction.reply('There was an issue updating the queue. Please try again later.');
+				interaction.reply({
+					content: 'There was an issue updating the queue. Please try again later.',
+					ephemeral: true,
+				});
+				await wait(5_000);
+				await interaction.deleteReply();
 			}
-			interaction.reply(`Added **${matchedSongObject.getDisplayString()}** to the queue!`);
+			interaction.reply({
+				content: `Added **${matchedSongObject.getDisplayString()}** to the queue!`,
+				ephemeral: true,
+			});
+			await wait(5_000);
+			await interaction.deleteReply();
 		}
 		else {
-			interaction.reply(`**${songTitle}** is already in the queue!`);
+			interaction.reply({
+				content: `**${songTitle}** is already in the queue!`,
+				ephemeral: true,
+			});
+			await wait(5_000);
+			await interaction.deleteReply();
 		}
 	}
 	else {
-		interaction.reply(`Sorry, couldn't find a song with the title "${songTitle}"`);
+		interaction.reply({
+			content: `Sorry, couldn't find a song with the title "${songTitle}"`,
+			ephemeral: true,
+		});
+		await wait(5_000);
+		await interaction.deleteReply();
 	}
 }
 
@@ -265,16 +372,22 @@ async function removeFromQueue(interaction, position = null) {
 
 		await updateQueueFile(songQueue, interaction);
 		console.logInfo(`Updated queue data saved to: ${queuePath}`);
+		queueEmitter.emit('queueUpdated', songQueue.slice());
 
 		if (position === null) {
-			interaction.reply('Cleared the queue!');
+			interaction.reply({
+				content: 'Cleared the queue!',
+				ephemeral: true,
+			});
+			await wait(5_000);
+			await interaction.deleteReply();
 		}
 		else {
 			interaction.reply({
 				content: `Removed **${removedSong.title}** from the queue!`,
 				ephemeral: true,
 			});
-			await wait(10_000);
+			await wait(5_000);
 			await interaction.deleteReply();
 		}
 	}
@@ -289,8 +402,7 @@ async function updateQueueFile(queueData, interaction) {
 
 	try {
 		const queueDataJSON = JSON.stringify([...queueData], null, 2);
-		// console.logInfo(`Updating queue data (before write): ${queueDataJSON}`);
-		fs.writeFile(queuePath, queueDataJSON, 'utf-8');
+		await fs.writeFile(queuePath, queueDataJSON, 'utf-8');
 	}
 	catch (error) {
 		console.logError(`Error saving queue data to ${queuePath}: ${error}`);
@@ -310,12 +422,25 @@ function pauseAudio(connection) {
 }
 
 // eslint-disable-next-line no-shadow
+function skipAudio(connection) {
+	if (connection) {
+		const player = connection.subscription?.audioPlayer;
+		if (player) {
+			player.stop();
+			console.logInfo('Song skipped.');
+		}
+	}
+}
+
+// eslint-disable-next-line no-shadow
 function stopAudio(connection) {
 	if (connection) {
 		const player = connection.subscription?.audioPlayer;
 		if (player) {
 			player.stop();
+			connection.unsubscribe();
 			console.logInfo('Playback stopped.');
+			songQueue.length = 0;
 		}
 	}
 }
@@ -331,42 +456,11 @@ module.exports = {
 	isConnected,
 	pauseAudio,
 	playAudio,
+	queueEmitter,
 	refreshSongDatabase,
 	removeFromQueue,
+	skipAudio,
 	songCount,
 	songDatabase,
 	stopAudio,
 };
-
-return createEmbed({
-	author: {
-		name: `${song.artist}`,
-		url: `${song.website}`,
-		icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
-	},
-	title: `___${song.title}___`,
-	description: `${song.album}`,
-	color: 0x000000,
-	thumbnail: {
-		url: 'https://cdn.discordapp.com/embed/avatars/0.png',
-	},
-	fields: [
-		{
-			name: 'Track Info:',
-			value: `Genre: ${song.genre} | BPM: ${song.bpm} | Released: ${song.year} | Label: ${song.label}`,
-		},
-		{
-			name: 'Upcoming Tracks:',
-			value: formatQueueList(queueData) || 'Queue is empty.',
-		},
-		{
-			name: 'Lyrics:',
-			value: `${song.lyrics}`,
-		},
-	],
-	footer: {
-		icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
-		text: `Aurora | Database: ${songDatabase.length} | Plays: ${sessionCount}`,
-	},
-});
-}

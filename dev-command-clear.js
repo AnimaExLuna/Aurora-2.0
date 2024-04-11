@@ -5,7 +5,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 require('dotenv').config();
 
-const token = process.env.TOKEN;
+const token = process.env.DEVTOKEN;
 
 const commands = [];
 const clientId = process.env.DEV;

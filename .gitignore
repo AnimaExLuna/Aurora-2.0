@@ -110,3 +110,4 @@ commands/reload.js
 .dependency-cruiser.js
 dev-command-init.js
 dev-command-init.js
+/music

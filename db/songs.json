@@ -1,0 +1,395 @@
+[
+  {
+    "title": "Shatter (Bray Wyatt's Theme)",
+    "artist": "Code Orange",
+    "album": "Unknown Album",
+    "genre": "Not Listed",
+    "bpm": "???",
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": null,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Bray Wyatt  Shatter (feat. Code Orange) [Entrance Theme].mp3"
+  },
+  {
+    "title": "3005",
+    "artist": "Unknown Artist",
+    "album": "Unknown Album",
+    "genre": "Not Listed",
+    "bpm": 166,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": "????",
+    "disk": {
+      "no": null,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Childish-Gambino-3005-Instrumental-Prod.-By-Stefan-Ponce-Ludwig-Göransson-Childish-Gambino.mp3"
+  },
+  {
+    "title": "Salvation",
+    "artist": "Excision & Dion Timmer ft. Alexis Donn",
+    "album": "Unknown Album",
+    "genre": [
+      "Dubstep"
+    ],
+    "bpm": 146,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2020,
+    "disk": {
+      "no": null,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Excision & Dion Timmer - Salvation (ft. Alexis Donn).mp3"
+  },
+  {
+    "title": "Grad Season",
+    "artist": "Marquis Storm",
+    "album": "Until Tomorrow Comes",
+    "genre": "Not Listed",
+    "bpm": 90,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": "????",
+    "disk": {
+      "no": null,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Grad Season.mp3"
+  },
+  {
+    "title": "Imagination",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Dubstep"
+    ],
+    "bpm": 145,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\1-Imagination.mp3"
+  },
+  {
+    "title": "Kinetica",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Drum & Bass"
+    ],
+    "bpm": 180,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\10-Kinetica.mp3"
+  },
+  {
+    "title": "Astral Hypnosis",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Drum & Bass"
+    ],
+    "bpm": 163,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\11-Astral Hypnosis.mp3"
+  },
+  {
+    "title": "Iridescent",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Drum & Bass"
+    ],
+    "bpm": 166,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\12-Iridescent.mp3"
+  },
+  {
+    "title": "Sunrise",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Trance"
+    ],
+    "bpm": 133,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\13-Sunrise.mp3"
+  },
+  {
+    "title": "Fate of the Netsphere",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Melodic Moombahton"
+    ],
+    "bpm": 104,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\14-Fate Of The Netsphere.mp3"
+  },
+  {
+    "title": "Beyond My Soul",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Midtempo"
+    ],
+    "bpm": 103,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\15-Beyond My Soul.mp3"
+  },
+  {
+    "title": "Escape The World",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Drum & Bass"
+    ],
+    "bpm": 176,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\2-Escape The World.mp3"
+  },
+  {
+    "title": "Shoot 'Em Down",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Midtempo"
+    ],
+    "bpm": 102,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\3-Shoot 'Em Down.mp3"
+  },
+  {
+    "title": "Eye of Saturn",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Electronic"
+    ],
+    "bpm": 170,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\4-Eye of Saturn.mp3"
+  },
+  {
+    "title": "Solaris",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Midtempo"
+    ],
+    "bpm": 103,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\5-Solaris.mp3"
+  },
+  {
+    "title": "Take 'Em Down",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Drumstep"
+    ],
+    "bpm": 170,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\6-Take 'Em Down.mp3"
+  },
+  {
+    "title": "Beware The Shadows",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Dubstep"
+    ],
+    "bpm": 140,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\7-Beware The Shadows.mp3"
+  },
+  {
+    "title": "The Phoenix",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Trapstep"
+    ],
+    "bpm": 140,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\8-The Phoenix.mp3"
+  },
+  {
+    "title": "Solar Flare (VIP)",
+    "artist": "Esirza",
+    "album": "Interstellar: Past",
+    "genre": [
+      "Dubstep"
+    ],
+    "bpm": 143,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2022,
+    "disk": {
+      "no": 1,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\Interstellar - Past\\9-Solar Flare VIP.mp3"
+  },
+  {
+    "title": "Too Soft On Me",
+    "artist": "SOPHIE feat Jozzy",
+    "album": "Unknown Album",
+    "genre": [
+      "Hyperpop"
+    ],
+    "bpm": 119,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": "????",
+    "disk": {
+      "no": null,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\test\\soft.mp3"
+  },
+  {
+    "title": "Interstellar: Voyage",
+    "artist": "Esirza",
+    "album": "Interstellar: Voyage",
+    "genre": [
+      "Electronic"
+    ],
+    "bpm": 109,
+    "website": "",
+    "picture": "",
+    "label": "Unknown Label",
+    "year": 2023,
+    "disk": {
+      "no": null,
+      "of": null
+    },
+    "lyrics": "No Lyrics Provided",
+    "filename": "music\\test.mp3"
+  }
+]
