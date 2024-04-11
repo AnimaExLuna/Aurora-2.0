@@ -46,7 +46,7 @@ module.exports = {
 	sendLogMessage: function(message, type = 'info') {
 		const embed = new EmbedBuilder()
 			.setTimestamp(new Date().getTime());
-
+    
 		switch (type) {
 		case 'info':
 			embed.setColor('#0099ff');
